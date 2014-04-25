@@ -76,6 +76,7 @@ static const char *get_capability(struct client *client)
 	else {
 		str_append(cap_str, CAPABILITY_BANNER_STRING);
 		str_append_c(cap_str, ' ');
+		i_debug("CAP %s", imap_client->set->imap_capability);
 		str_append(cap_str, imap_client->set->imap_capability + 1);
 	}
 
@@ -99,6 +100,7 @@ static int cmd_capability(struct imap_client *imap_client)
 		imap_client->client_ignores_capability_resp_code = TRUE;
 	client_send_raw(client, t_strconcat(
 		"* CAPABILITY ", get_capability(client), "\r\n", NULL));
+	i_debug(t_strconcat("cmd_capability: fetched CAPABILITY ", get_capability(client), "\r\n", NULL));
 	client_send_reply(client, IMAP_CMD_REPLY_OK,
 		"Pre-login capabilities listed, post-login capabilities have more.");
 	return 1;
