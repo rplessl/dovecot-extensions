@@ -250,6 +250,19 @@ You may also force the username to be taken from the certificate by setting
    (parsed using OpenSSL's 'OBJ_txt2nid()' function). 'x500UniqueIdentifier' is
    a common choice.
 
+You may also configure the certificate algorithm. In that way valid and
+allowed client certificate can be looked up in a given database (SQL, LDAP).
+
+---%<-------------------------------------------------------------------------
+ssl_cert_md_algorithm = sha1
+---%<-------------------------------------------------------------------------
+
+The max. depth of the certificate chain can be configured:
+
+---%<-------------------------------------------------------------------------
+ssl_verify_depth = 3
+---%<-------------------------------------------------------------------------
+
 You may also want to disable the password checking completely. Doing this
 currently circumvents Dovecot's security model so it's not recommended to use
 it, but it is possible by making the <passdb> [PasswordDatabase.txt] allow

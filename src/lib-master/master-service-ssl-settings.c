@@ -24,10 +24,14 @@ static const struct setting_define master_service_ssl_setting_defines[] = {
 	DEF(SET_STR, ssl_protocols),
 	DEF(SET_STR, ssl_cert_username_field),
 	DEF(SET_STR, ssl_crypto_device),
+	DEF(SET_STR, ssl_cert_md_algorithm),
+	DEF(SET_UINT, ssl_verify_depth),
 	DEF(SET_BOOL, ssl_verify_client_cert),
 	DEF(SET_BOOL, ssl_require_crl),
 	DEF(SET_BOOL, verbose_ssl),
 	DEF(SET_BOOL, ssl_prefer_server_ciphers),
+	DEF(SET_BOOL, ssl_cert_info),
+	DEF(SET_BOOL, ssl_cert_debug),
 
 	SETTING_DEFINE_LIST_END
 };
@@ -46,10 +50,14 @@ static const struct master_service_ssl_settings master_service_ssl_default_setti
 	.ssl_protocols = "!SSLv2",
 	.ssl_cert_username_field = "commonName",
 	.ssl_crypto_device = "",
+	.ssl_cert_md_algorithm = "sha1",
+	.ssl_verify_depth = 9,
 	.ssl_verify_client_cert = FALSE,
 	.ssl_require_crl = TRUE,
 	.verbose_ssl = FALSE,
-	.ssl_prefer_server_ciphers = FALSE
+	.ssl_prefer_server_ciphers = FALSE,
+	.ssl_cert_info = FALSE,
+	.ssl_cert_debug = FALSE,
 };
 
 const struct setting_parser_info master_service_ssl_setting_parser_info = {

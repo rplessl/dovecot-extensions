@@ -29,14 +29,14 @@ struct auth_request {
 	int refcount;
 
 	pool_t pool;
-        enum auth_request_state state;
-        /* user contains the user who is being authenticated.
-           When master user is logging in as someone else, it gets more
-           complicated. Initially user is set to master's username and the
-           requested_login_user is set to destination username. After masterdb
-           has validated user as a valid master user, master_user is set to
-           user and user is set to requested_login_user. */
-        char *user, *requested_login_user, *master_user;
+	enum auth_request_state state;
+	/* user contains the user who is being authenticated.
+	   When master user is logging in as someone else, it gets more
+	   complicated. Initially user is set to master's username and the
+	   requested_login_user is set to destination username. After masterdb
+	   has validated user as a valid master user, master_user is set to
+	   user and user is set to requested_login_user. */
+	char *user, *requested_login_user, *master_user;
 	/* original_username contains the username exactly as given by the
 	   client. this is needed at least with DIGEST-MD5 for password
 	   verification. however with master logins the master username has
@@ -49,9 +49,13 @@ struct auth_request {
 	const char *realm;
 	char *mech_password; /* set if verify_plain() is called */
 	char *passdb_password; /* set after password lookup if successful */
-        /* extra_fields are returned in authentication reply. Fields prefixed
-           with "userdb_" are automatically placed to userdb_reply instead. */
-        struct auth_fields *extra_fields;
+	/* extra_fields are returned in authentication reply. Fields prefixed
+	   with "userdb_" are automatically placed to userdb_reply instead. */
+	/* the login/username and fingerprint given by the certificate */
+	char *cert_loginname;
+    char *cert_fingerprint;
+    char *cert_fingerprint_base64;
+	struct auth_fields *extra_fields;
 	/* the whole userdb result reply */
 	struct auth_fields *userdb_reply;
 	struct auth_request_proxy_dns_lookup_ctx *dns_lookup_ctx;
@@ -61,12 +65,12 @@ struct auth_request {
 
 	const struct mech_module *mech;
 	const struct auth_settings *set;
-        struct auth_passdb *passdb;
-        struct auth_userdb *userdb;
+	struct auth_passdb *passdb;
+	struct auth_userdb *userdb;
 
 	/* passdb lookups have a handler, userdb lookups don't */
 	struct auth_request_handler *handler;
-        struct auth_master_connection *master;
+	struct auth_master_connection *master;
 
 	unsigned int connect_uid;
 	unsigned int client_pid;
@@ -149,7 +153,7 @@ extern unsigned int auth_request_state_count[AUTH_REQUEST_STATE_MAX];
 #define AUTH_REQUEST_VAR_TAB_USER_IDX 0
 #define AUTH_REQUEST_VAR_TAB_USERNAME_IDX 1
 #define AUTH_REQUEST_VAR_TAB_DOMAIN_IDX 2
-#define AUTH_REQUEST_VAR_TAB_COUNT 27
+#define AUTH_REQUEST_VAR_TAB_COUNT 30
 extern const struct var_expand_table
 auth_request_var_expand_static_tab[AUTH_REQUEST_VAR_TAB_COUNT+1];
 
