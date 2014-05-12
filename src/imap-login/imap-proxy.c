@@ -63,6 +63,8 @@ static int proxy_write_login(struct imap_client *client, string_t *str)
 	unsigned int len;
 	const char *mech_name, *error;
 
+    i_debug("proxy_write_login pre CAPABILITY %s", str_c(str));
+
 	/* Send CAPABILITY command if we don't know the capabilities yet.
 	   Also as kind of a Dovecot-backend workaround if the client insisted
 	   on sending CAPABILITY command (even though our banner already sent
@@ -74,6 +76,9 @@ static int proxy_write_login(struct imap_client *client, string_t *str)
 	     client->client_ignores_capability_resp_code)) {
 		client->proxy_capability_request_sent = TRUE;
 		str_append(str, "C CAPABILITY\r\n");
+
+		i_debug("proxy_write_login C CAPABILITY done?: %s", str_c(str));
+
 		if (client->common.proxy_nopipelining) {
 			/* authenticate only after receiving C OK reply. */
 			return 0;
@@ -86,8 +91,10 @@ static int proxy_write_login(struct imap_client *client, string_t *str)
 		imap_append_string(str, client->common.proxy_user);
 		str_append_c(str, ' ');
 		imap_append_string(str, client->common.proxy_password);
-		str_append(str, "\r\n");
+		
+		i_debug("proxy_write_login L LOGIN done?: %s", str_c(str));
 
+		str_append(str, "\r\n");
 		proxy_free_password(&client->common);
 		return 0;
 	}
@@ -137,6 +144,8 @@ static int proxy_input_banner(struct imap_client *client,
 		return -1;
 	}
 
+	i_debug("proxy_input_banner line %s", line);
+
 	str = t_str_new(128);
 	if (strncmp(line + 5, "[CAPABILITY ", 12) == 0) {
 		capabilities = t_strsplit(t_strcut(line + 5 + 12, ']'), " ");
@@ -163,6 +172,8 @@ static int proxy_input_banner(struct imap_client *client,
 			return -1;
 	}
 
+	i_debug("proxy_input_banner str %s", str_c(str));
+
 	o_stream_nsend(output, str_data(str), str_len(str));
 	return 0;
 }
@@ -173,6 +184,8 @@ client_send_login_reply(struct imap_client *client, string_t *str,
 {
 	const char *capability;
 	bool tagged_capability;
+
+	i_debug("client_send_login_reply line %s", line);
 
 	capability = client->proxy_backend_capability;
 	tagged_capability = strncasecmp(line, "[CAPABILITY ", 12) == 0;
@@ -199,6 +212,9 @@ client_send_login_reply(struct imap_client *client, string_t *str,
 		}
 	}
 	str_append(str, line);
+
+	i_debug("client_send_login_reply str %s", str_c(str));
+
 	str_append(str, "\r\n");
 }
 
@@ -213,6 +229,8 @@ int imap_proxy_parse_line(struct client *client, const char *line)
 	int ret;
 
 	i_assert(!client->destroyed);
+
+	i_debug("imap_proxy_parse_line line: %s", line);
 
 	output = login_proxy_get_ostream(client->login_proxy);
 	if (!imap_client->proxy_seen_banner) {

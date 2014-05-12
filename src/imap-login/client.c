@@ -69,6 +69,7 @@ static const char *get_capability(struct client *client)
 	struct imap_client *imap_client = (struct imap_client *)client;
 	string_t *cap_str = t_str_new(256);
 
+
 	if (*imap_client->set->imap_capability == '\0')
 		str_append(cap_str, CAPABILITY_BANNER_STRING);
 	else if (*imap_client->set->imap_capability != '+')
@@ -80,12 +81,17 @@ static const char *get_capability(struct client *client)
 		str_append(cap_str, imap_client->set->imap_capability + 1);
 	}
 
+	i_debug("get_capability a) cap_str %s", str_c(cap_str));
+
 	if (client_is_tls_enabled(client) && !client->tls)
 		str_append(cap_str, " STARTTLS");
 	if (is_login_cmd_disabled(client))
 		str_append(cap_str, " LOGINDISABLED");
 
 	client_authenticate_get_capabilities(client, cap_str);
+
+	i_debug("get_capability b) cap_str %s", str_c(cap_str));
+
 	return str_c(cap_str);
 }
 
